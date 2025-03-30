@@ -149,7 +149,6 @@ func convert_identifiers*(content: string, to_camel: bool): string =
             break
 
     if last_pos < content.len:
-        let remaining_text = content[last_pos .. ^1]
-        result.add(process_text_segment(remaining_text, to_camel))
+        result.add(process_text_segment(content[last_pos .. ^1], to_camel))
 
     return result
