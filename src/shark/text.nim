@@ -1,6 +1,7 @@
 import std/[strutils, sequtils, re]
 
 proc to_camel_case*(s: string): string =
+    ## Converts some input string, this can be source code, to camel case.
     let
         all_caps = s.len > 0 and s.to_upper_ascii() == s and s.contains('_')
         is_pascal_case = s.len > 0 and s[0] in {'A'..'Z'}
@@ -9,7 +10,6 @@ proc to_camel_case*(s: string): string =
         return s
 
     var capitalize_next = false
-    result = ""
     if s.len > 0 and s[0] == '_':
         capitalize_next = true
 
@@ -23,11 +23,10 @@ proc to_camel_case*(s: string): string =
             result.add(c)
 
 proc to_snake_case*(s: string): string =
+    ## Converts some input string, that may be source code, to snake case.
     if s.len > 0 and s.to_upper_ascii() == s:
         return s
     let is_pascal_case = s.len > 0 and s[0] in {'A'..'Z'}
-
-    result = ""
     for i, c in s:
         if i > 0 and c in {'A'..'Z'}:
             result.add('_')
@@ -39,6 +38,7 @@ proc to_snake_case*(s: string): string =
                 result.add(c)
 
 proc process_text_segment(text: string, to_camel: bool): string =
+    ## Internal logic for processing text sections.
     var i = 0
 
     while i < text.len:
@@ -71,6 +71,9 @@ proc process_text_segment(text: string, to_camel: bool): string =
     return result
 
 proc convert_identifiers*(content: string, to_camel: bool): string =
+    ## Convert the identifiers in the content.
+    ##
+    ## Either to camel or snake case.
     let string_pattern = re"'[^']*'"
     var
         last_pos = 0
@@ -78,7 +81,11 @@ proc convert_identifiers*(content: string, to_camel: bool): string =
 
     result = ""
     while current_pos < content.len:
-        let bounds = find_bounds(content, string_pattern, current_pos)
+        let bounds = find_bounds(
+            content,
+            string_pattern,
+            current_pos
+        )
         if bounds.first >= 0:
             let text_before = content[last_pos ..< bounds.first]
             result.add(process_text_segment(text_before, to_camel))
