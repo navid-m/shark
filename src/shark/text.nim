@@ -127,7 +127,7 @@ func convert_identifiers*(content: string, to_camel: bool): string =
     ## Convert the identifiers in the content.
     ##
     ## Either to camel or snake case.
-    let string_pattern = re"'[^']*'"
+    let string_pattern = re"""(?:"[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')"""
     var
         last_pos = 0
         current_pos = 0
