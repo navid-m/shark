@@ -23,7 +23,7 @@ proc to_camel_case*(s: string): string =
             result.add(c)
 
 proc to_snake_case*(s: string): string =
-    ## Converts some input string, that may be source code, to snake case.
+    ## Converts some input string, this can be source code, to snake case.
     if s.len > 0 and s.to_upper_ascii() == s:
         return s
     let is_pascal_case = s.len > 0 and s[0] in {'A'..'Z'}
