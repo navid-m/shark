@@ -108,7 +108,6 @@ proc processFile*(filename: string, toCamel: bool) =
         converted = convertIdentifiers(content, toCamel)
 
     writeFile(filename, converted)
-    echo "Processed file: ", filename
 
 when isMainModule:
     var
