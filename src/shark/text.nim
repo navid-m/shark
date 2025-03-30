@@ -13,29 +13,29 @@ proc to_camel_case*(str: string): string =
     if str.len > 0 and str[0] == '_':
         capitalize_next = true
 
-    for c in str:
-        if c == '_':
+    for chara in str:
+        if chara == '_':
             capitalize_next = true
         elif capitalize_next:
-            result.add(to_upper_ascii(c))
+            result.add(to_upper_ascii(chara))
             capitalize_next = false
         else:
-            result.add(c)
+            result.add(chara)
 
 proc to_snake_case*(str: string): string =
     ## Converts some input string, this can be source code, to snake case.
     if str.len > 0 and str.to_upper_ascii() == str:
         return str
     let is_pascal_case = str.len > 0 and str[0] in {'A'..'Z'}
-    for i, c in str:
-        if i > 0 and c in {'A'..'Z'}:
+    for i, chara in str:
+        if i > 0 and chara in {'A'..'Z'}:
             result.add('_')
-            result.add(to_lower_ascii(c))
+            result.add(to_lower_ascii(chara))
         else:
             if i == 0 and is_pascal_case:
-                result.add(to_lower_ascii(c))
+                result.add(to_lower_ascii(chara))
             else:
-                result.add(c)
+                result.add(chara)
 
 proc process_text_segment(text: string, to_camel: bool): string =
     ## Internal logic for processing text sections.
