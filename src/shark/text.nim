@@ -33,16 +33,16 @@ func to_snake_case*(str: string): string =
     var prev: char = '\0'
 
     for i, chara in str:
-        var localPrev = '\0'
+        var local_prev = '\0'
 
         if prev == '\0':
             prev = chara
         else:
-            localPrev = prev
+            local_prev = prev
             prev = '\0'
 
         if i > 0 and chara in {'A'..'Z'}:
-            if localPrev != '"' and localPrev != '\'':
+            if local_prev != '"' and local_prev != '\'':
                 result.add('_')
             else:
                 result.add(chara)
