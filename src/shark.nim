@@ -19,6 +19,7 @@ when is_main_module:
             case key
             of "c": to_camel = true
             of "s": to_snake = true
+            of "about": meta.show_about()
         of cmd_end: discard
 
     if to_camel and to_snake:
