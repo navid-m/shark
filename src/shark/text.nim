@@ -1,19 +1,19 @@
 import std/[strutils, sequtils, re]
 
-proc to_camel_case*(s: string): string =
+proc to_camel_case*(str: string): string =
     ## Converts some input string, this can be source code, to camel case.
     let
-        all_caps = s.len > 0 and s.to_upper_ascii() == s and s.contains('_')
-        is_pascal_case = s.len > 0 and s[0] in {'A'..'Z'}
+        all_caps = str.len > 0 and str.to_upper_ascii() == str and str.contains('_')
+        is_pascal_case = str.len > 0 and str[0] in {'A'..'Z'}
 
     if is_pascal_case or all_caps:
-        return s
+        return str
 
     var capitalize_next = false
-    if s.len > 0 and s[0] == '_':
+    if str.len > 0 and str[0] == '_':
         capitalize_next = true
 
-    for c in s:
+    for c in str:
         if c == '_':
             capitalize_next = true
         elif capitalize_next:
@@ -22,12 +22,12 @@ proc to_camel_case*(s: string): string =
         else:
             result.add(c)
 
-proc to_snake_case*(s: string): string =
+proc to_snake_case*(str: string): string =
     ## Converts some input string, this can be source code, to snake case.
-    if s.len > 0 and s.to_upper_ascii() == s:
-        return s
-    let is_pascal_case = s.len > 0 and s[0] in {'A'..'Z'}
-    for i, c in s:
+    if str.len > 0 and str.to_upper_ascii() == str:
+        return str
+    let is_pascal_case = str.len > 0 and str[0] in {'A'..'Z'}
+    for i, c in str:
         if i > 0 and c in {'A'..'Z'}:
             result.add('_')
             result.add(to_lower_ascii(c))
