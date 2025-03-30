@@ -30,8 +30,23 @@ func to_snake_case*(str: string): string =
     ## Converts some input string, this can be source code, to snake case.
     if str.len > 0 and str.to_upper_ascii() == str:
         return str
+    var prev: char = '\0'
+
     for i, chara in str:
+        var localPrev = '\0'
+
+        if prev == '\0':
+            prev = chara
+        else:
+            localPrev = prev
+            prev = '\0'
+
         if i > 0 and chara in {'A'..'Z'}:
+            if localPrev != '"' and localPrev != '\'':
+                result.add('_')
+            else:
+                result.add(chara)
+                continue
             result.add(to_lower_ascii(chara))
         else:
             if i == 0 and is_pascal_case(str):
