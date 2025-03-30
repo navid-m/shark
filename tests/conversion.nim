@@ -1,7 +1,7 @@
 import std/[unittest, os, tempfiles]
 import shark
 
-suite "Case Converter Tests":
+suite "Fundamental Tests":
     test "toCamelCase basic conversion":
         check toCamelCase("snake_case_variable") == "snakeCaseVariable"
         check toCamelCase("another_example") == "anotherExample"
@@ -9,8 +9,7 @@ suite "Case Converter Tests":
 
     test "toCamelCase edge cases":
         check toCamelCase("") == ""
-        check toCamelCase("_leading_underscore") ==
-                "LeadingUnderscore" #Check failed: toSnakeCase("LeadingCapital") == "leading_capital" toSnakeCase("LeadingCapital") was Leading_capital
+        check toCamelCase("_leading_underscore") == "LeadingUnderscore"
         check toCamelCase("trailing_underscore_") == "trailingUnderscore"
         check toCamelCase("multiple___underscores") == "multipleUnderscores"
 
@@ -22,7 +21,7 @@ suite "Case Converter Tests":
     test "toSnakeCase edge cases":
         check toSnakeCase("") == ""
         check toSnakeCase("LeadingCapital") == "leading_capital"
-        check toSnakeCase("ALLCAPS") == "ALLCAPS" #All capitals should be unchanged, currently toSnakeCase("ALLCAPS") is A_l_l_c_a_p_s
+        check toSnakeCase("ALLCAPS") == "ALLCAPS"
 
     test "convertIdentifiers ignores string literals for camelCase":
         let input = "some_var = 'string_with_underscores'"
@@ -67,4 +66,35 @@ suite "Case Converter Tests":
     test "adjacent string literals":
         let input = "var1 = 'string1''string2' + snake_case"
         let expected = "var1 = 'string1''string2' + snakeCase"
+        check convertIdentifiers(input, true) == expected
+
+suite "Quote Escapes":
+    test "convertIdentifiers ignores single quoted strings":
+        let input = "some_var = 'string_with_underscores'"
+        let expected = "someVar = 'string_with_underscores'"
+        check convertIdentifiers(input, true) == expected
+
+    test "convertIdentifiers ignores double quoted strings":
+        let input = "some_var = \"camelCaseInDoubleQuotes\""
+        let expected = "someVar = \"camelCaseInDoubleQuotes\""
+        check convertIdentifiers(input, true) == expected
+
+    test "convertIdentifiers ignores triple single quoted strings":
+        let input = "some_var = '''triple_quoted_string_with_underscores'''"
+        let expected = "someVar = '''triple_quoted_string_with_underscores'''"
+        check convertIdentifiers(input, true) == expected
+
+    test "convertIdentifiers ignores triple double quoted strings":
+        let input = "some_var = \"\"\"tripleDoubleQuotedCamelCase\"\"\""
+        let expected = "someVar = \"\"\"tripleDoubleQuotedCamelCase\"\"\""
+        check convertIdentifiers(input, true) == expected
+
+    test "convertIdentifiers handles escaped quotes in strings":
+        let input = "some_var = 'string with \\'escaped\\' quotes'"
+        let expected = "someVar = 'string with \\'escaped\\' quotes'"
+        check convertIdentifiers(input, true) == expected
+
+    test "convertIdentifiers handles mixed quote styles":
+        let input = "snake_var = 'single' + another_var + \"double\" + yet_another"
+        let expected = "snakeVar = 'single' + anotherVar + \"double\" + yetAnother"
         check convertIdentifiers(input, true) == expected
