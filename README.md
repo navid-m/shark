@@ -20,7 +20,7 @@ shark -s src/shark/text.nim
 
 Use the `to_camel_case`, `to_snake_case`, and `process_file` functions exported by the library.
 
-Intended for nim source files but can be used on any text.
+Intended for nim source files but can be used on any text files.
 
 ---
 
