@@ -132,7 +132,6 @@ func convert_identifiers*(content: string, to_camel: bool): string =
         last_pos = 0
         current_pos = 0
 
-    result = ""
     while current_pos < content.len:
         let bounds = find_bounds(
             content,
@@ -140,8 +139,7 @@ func convert_identifiers*(content: string, to_camel: bool): string =
             current_pos
         )
         if bounds.first >= 0:
-            let text_before = content[last_pos ..< bounds.first]
-            result.add(process_text_segment(text_before, to_camel))
+            result.add(process_text_segment(content[last_pos ..< bounds.first], to_camel))
             result.add(content[bounds.first .. bounds.last])
             last_pos = bounds.last + 1
             current_pos = bounds.last + 1
