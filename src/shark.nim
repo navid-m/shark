@@ -1,8 +1,18 @@
-import std/[os, strutils, parseopt, re]
+import std/[os, strutils, parseopt, re, sequtils]
 
 proc toCamelCase*(s: string): string =
+    let
+        allCaps = s.len > 0 and s.toUpperAscii() == s and s.contains('_')
+        isPascalCase = s.len > 0 and s[0] in {'A'..'Z'}
+
+    if isPascalCase or allCaps:
+        return s
+
     var capitalizeNext = false
     result = ""
+    if s.len > 0 and s[0] == '_':
+        capitalizeNext = true
+
     for c in s:
         if c == '_':
             capitalizeNext = true
@@ -13,28 +23,57 @@ proc toCamelCase*(s: string): string =
             result.add(c)
 
 proc toSnakeCase*(s: string): string =
+    let allCaps = s.len > 0 and s.toUpperAscii() == s
+    if allCaps:
+        return s
+    let isPascalCase = s.len > 0 and s[0] in {'A'..'Z'}
+
     result = ""
     for i, c in s:
         if i > 0 and c in {'A'..'Z'}:
             result.add('_')
             result.add(toLowerAscii(c))
         else:
-            result.add(c)
+            if i == 0 and isPascalCase:
+                result.add(toLowerAscii(c))
+            else:
+                result.add(c)
 
 proc convertIdentifiers*(content: string, toCamel: bool): string =
     let stringPattern = re"'[^']*'"
     var
         lastPos = 0
         currentPos = 0
+
     while currentPos < content.len:
         let bounds = findBounds(content, stringPattern, currentPos)
-
         if bounds.first >= 0:
             let textBefore = content[lastPos ..< bounds.first]
             if toCamel:
-                result.add(toCamelCase(textBefore))
+                var parts: seq[string] = @[]
+                for part in textBefore.split(Whitespace):
+                    if part.len > 0:
+                        if part.len > 0 and part[0] in {'A'..'Z'} and
+                                part.contains({'a'..'z'}):
+                            parts.add(part)
+                        else:
+                            parts.add(toCamelCase(part))
+                    else:
+                        parts.add(part)
+                result.add(parts.join(" "))
             else:
-                result.add(toSnakeCase(textBefore))
+                var parts: seq[string] = @[]
+                for part in textBefore.split(Whitespace):
+                    if part.len > 0:
+                        if part.len > 0 and part[0] in {'A'..'Z'} and
+                                part.contains({'a'..'z'}) and
+                           not part[0..^1].allIt(it in {'A'..'Z'}):
+                            parts.add(part)
+                        else:
+                            parts.add(toSnakeCase(part))
+                    else:
+                        parts.add(part)
+                result.add(parts.join(" "))
 
             result.add(content[bounds.first .. bounds.last])
             lastPos = bounds.last + 1
@@ -45,9 +84,29 @@ proc convertIdentifiers*(content: string, toCamel: bool): string =
     if lastPos < content.len:
         let remainingText = content[lastPos .. ^1]
         if toCamel:
-            result.add(toCamelCase(remainingText))
+            var parts: seq[string] = @[]
+            for part in remainingText.split(Whitespace):
+                if part.len > 0:
+                    if part.len > 0 and part[0] in {'A'..'Z'} and part.contains({'a'..'z'}):
+                        parts.add(part)
+                    else:
+                        parts.add(toCamelCase(part))
+                else:
+                    parts.add(part)
+            result.add(parts.join(" "))
         else:
-            result.add(toSnakeCase(remainingText))
+            var parts: seq[string] = @[]
+            for part in remainingText.split(Whitespace):
+                if part.len > 0:
+                    if part.len > 0 and part[0] in {'A'..'Z'} and part.contains(
+                            {'a'..'z'}) and
+                       not part[0..^1].allIt(it in {'A'..'Z'}):
+                        parts.add(part)
+                    else:
+                        parts.add(toSnakeCase(part))
+                else:
+                    parts.add(part)
+            result.add(parts.join(" "))
 
     return result
 
@@ -57,12 +116,13 @@ proc processFile*(filename: string, toCamel: bool) =
     if not fileExists(filename):
         echo "Error: File not found: ", filename
         return
+
     let
         content = readFile(filename)
         converted = convertIdentifiers(content, toCamel)
+
     writeFile(filename, converted)
     echo "Processed file: ", filename
-
 
 when isMainModule:
     var
@@ -87,9 +147,11 @@ when isMainModule:
         echo "Must specify either -c (to camelCase) or -s (to snake_case)"
         showUsage()
         quit(1)
+
     if files.len == 0:
         echo "No input files specified"
         showUsage()
         quit(1)
+
     for file in files:
         processFile(file, toCamel)

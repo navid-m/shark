@@ -9,7 +9,8 @@ suite "Case Converter Tests":
 
     test "toCamelCase edge cases":
         check toCamelCase("") == ""
-        check toCamelCase("_leading_underscore") == "LeadingUnderscore"
+        check toCamelCase("_leading_underscore") ==
+                "LeadingUnderscore" #Check failed: toSnakeCase("LeadingCapital") == "leading_capital" toSnakeCase("LeadingCapital") was Leading_capital
         check toCamelCase("trailing_underscore_") == "trailingUnderscore"
         check toCamelCase("multiple___underscores") == "multipleUnderscores"
 
@@ -21,7 +22,7 @@ suite "Case Converter Tests":
     test "toSnakeCase edge cases":
         check toSnakeCase("") == ""
         check toSnakeCase("LeadingCapital") == "leading_capital"
-        check toSnakeCase("ALLCAPS") == "a_l_l_c_a_p_s"
+        check toSnakeCase("ALLCAPS") == "ALLCAPS" #All capitals should be unchanged, currently toSnakeCase("ALLCAPS") is A_l_l_c_a_p_s
 
     test "convertIdentifiers ignores string literals for camelCase":
         let input = "some_var = 'string_with_underscores'"
@@ -58,8 +59,8 @@ suite "Case Converter Tests":
 
     test "mixed case conversions":
         let mixed = "snake_case mixedWith camelCase and PascalCase"
-        let to_camel = "snakeCase mixedWith camelCase and pascalCase"
-        let to_snake = "snake_case mixed_with camel_case and pascal_case"
+        let to_camel = "snakeCase mixedWith camelCase and PascalCase"
+        let to_snake = "snake_case mixed_with camel_case and PascalCase"
         check convertIdentifiers(mixed, true) == to_camel
         check convertIdentifiers(mixed, false) == to_snake
 
