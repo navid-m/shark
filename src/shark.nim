@@ -21,15 +21,15 @@ when is_main_module:
         of cmd_end: discard
 
     if to_camel and to_snake:
-        echo "Cannot specify both -c and -s options"
+        echo "You cannot specify both -c and -s options."
         quit(1)
     elif not to_camel and not to_snake:
-        echo "Must specify either -c (to camelCase) or -s (to snake_case)"
+        echo "Specify either -c (camel case) or -s (snake case)."
         show_usage()
         quit(1)
 
     if files.len == 0:
-        echo "No input files specified"
+        echo "Specify an input file."
         show_usage()
         quit(1)
 
