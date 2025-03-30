@@ -3,8 +3,6 @@ import shark/[meta, processing, text]
 
 export to_camel_case
 export to_snake_case
-export convert_identifiers
-export process_file
 
 when is_main_module:
     var

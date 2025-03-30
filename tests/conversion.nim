@@ -1,5 +1,5 @@
 import std/[unittest, os, tempfiles]
-import shark
+import shark/[text, processing]
 
 suite "Fundamental Tests":
     test "toCamelCase basic conversion":
