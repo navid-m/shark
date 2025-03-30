@@ -13,11 +13,29 @@ func to_camel_case*(str: string): string =
     if is_pascal_case(str) or is_all_caps(str):
         return str
 
-    var capitalize_next = false
+    var
+        capitalize_next = false
+        in_single_quotes = false
+        in_double_quotes = false
+
     if str.len > 0 and str[0] == '_':
         capitalize_next = true
 
     for chara in str:
+        if chara == '\'':
+            in_single_quotes = not in_single_quotes
+            result.add(chara)
+            continue
+
+        if chara == '\"':
+            in_double_quotes = not in_double_quotes
+            result.add(chara)
+            continue
+
+        if in_double_quotes or in_single_quotes:
+            result.add(chara)
+            continue
+
         if chara == '_':
             capitalize_next = true
         elif capitalize_next:
@@ -31,9 +49,10 @@ func to_snake_case*(str: string): string =
     if str.len > 0 and str.to_upper_ascii() == str:
         return str
 
-    var prev: char = '\0'
-    var in_single_quotes = false
-    var in_double_quotes = false
+    var
+        prev: char = '\0'
+        in_single_quotes = false
+        in_double_quotes = false
 
     for i, chara in str:
         if chara == '\'':
