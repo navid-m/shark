@@ -123,11 +123,13 @@ func process_text_segment(text: string, to_camel: bool): string =
                         result.add(to_snake_case(word))
     return result
 
-func convert_identifiers*(content: string, to_camel: bool): string =
+
+let string_pattern: Regex = re"""(?:"[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')"""
+
+proc convert_identifiers*(content: string, to_camel: bool): string =
     ## Convert the identifiers in the content.
     ##
     ## Either to camel or snake case.
-    let string_pattern = re"""(?:"[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')"""
     var
         last_pos = 0
         current_pos = 0
