@@ -7,9 +7,10 @@ proc process_file*(filename: string, to_camel: bool) =
         echo "File not found: ", filename
         return
 
-    let converted: string = convert_identifiers(
-        read_file(filename),
-        to_camel
+    write_file(
+        filename,
+        convert_identifiers(
+            read_file(filename),
+            to_camel
+        )
     )
-
-    write_file(filename, converted)
