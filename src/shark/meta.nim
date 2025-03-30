@@ -1,4 +1,4 @@
-proc show_usage*() = echo "usage: shark -c|-s filename [filename2 ...]"
+proc show_usage*() = echo "usage: shark -c|-s fname [fname_2 ...]"
 proc show_about*() =
     echo """
                 ,
