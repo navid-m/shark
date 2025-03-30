@@ -1,12 +1,16 @@
 import std/[strutils, sequtils, re]
 
-proc to_camel_case*(str: string): string =
-    ## Converts some input string, this can be source code, to camel case.
-    let
-        all_caps = str.len > 0 and str.to_upper_ascii() == str and str.contains('_')
-        is_pascal_case = str.len > 0 and str[0] in {'A'..'Z'}
+func is_pascal_case(str: string): bool =
+    ## Whether or not this text is in PascalCase.
+    str.len > 0 and str[0] in {'A'..'Z'}
 
-    if is_pascal_case or all_caps:
+func is_all_caps(str: string): bool =
+    ## Whether or not this text is all caps, screaming snake case, or whatever.
+    str.len > 0 and str.to_upper_ascii() == str and str.contains('_')
+
+func to_camel_case*(str: string): string =
+    ## Converts some input string, this can be source code, to camel case.
+    if is_pascal_case(str) or is_all_caps(str):
         return str
 
     var capitalize_next = false
@@ -22,22 +26,21 @@ proc to_camel_case*(str: string): string =
         else:
             result.add(chara)
 
-proc to_snake_case*(str: string): string =
+func to_snake_case*(str: string): string =
     ## Converts some input string, this can be source code, to snake case.
     if str.len > 0 and str.to_upper_ascii() == str:
         return str
-    let is_pascal_case = str.len > 0 and str[0] in {'A'..'Z'}
     for i, chara in str:
         if i > 0 and chara in {'A'..'Z'}:
             result.add('_')
             result.add(to_lower_ascii(chara))
         else:
-            if i == 0 and is_pascal_case:
+            if i == 0 and is_pascal_case(str):
                 result.add(to_lower_ascii(chara))
             else:
                 result.add(chara)
 
-proc process_text_segment(text: string, to_camel: bool): string =
+func process_text_segment(text: string, to_camel: bool): string =
     ## Internal logic for processing text sections.
     var i = 0
     while i < text.len:
@@ -69,7 +72,7 @@ proc process_text_segment(text: string, to_camel: bool): string =
                         result.add(to_snake_case(word))
     return result
 
-proc convert_identifiers*(content: string, to_camel: bool): string =
+func convert_identifiers*(content: string, to_camel: bool): string =
     ## Convert the identifiers in the content.
     ##
     ## Either to camel or snake case.
