@@ -39,42 +39,51 @@ proc toSnakeCase*(s: string): string =
             else:
                 result.add(c)
 
+proc processTextSegment(text: string, toCamel: bool): string =
+    var i = 0
+
+    while i < text.len:
+        var wsStart = i
+        while i < text.len and text[i] in Whitespace:
+            i.inc
+
+        if i > wsStart:
+            result.add(text[wsStart..<i])
+
+        var wordStart = i
+        while i < text.len and text[i] notin Whitespace:
+            i.inc
+
+        if i > wordStart:
+            let word = text[wordStart..<i]
+            if word.len > 0:
+                if toCamel:
+                    if word.len > 0 and word[0] in {'A'..'Z'} and word.contains({'a'..'z'}):
+                        result.add(word)
+                    else:
+                        result.add(toCamelCase(word))
+                else:
+                    if word.len > 0 and word[0] in {'A'..'Z'} and word.contains(
+                            {'a'..'z'}) and
+                       not word[0..^1].allIt(it in {'A'..'Z'}):
+                        result.add(word)
+                    else:
+                        result.add(toSnakeCase(word))
+
+    return result
+
 proc convertIdentifiers*(content: string, toCamel: bool): string =
     let stringPattern = re"'[^']*'"
     var
         lastPos = 0
         currentPos = 0
 
+    result = ""
     while currentPos < content.len:
         let bounds = findBounds(content, stringPattern, currentPos)
         if bounds.first >= 0:
             let textBefore = content[lastPos ..< bounds.first]
-            if toCamel:
-                var parts: seq[string] = @[]
-                for part in textBefore.split(Whitespace):
-                    if part.len > 0:
-                        if part.len > 0 and part[0] in {'A'..'Z'} and
-                                part.contains({'a'..'z'}):
-                            parts.add(part)
-                        else:
-                            parts.add(toCamelCase(part))
-                    else:
-                        parts.add(part)
-                result.add(parts.join(" "))
-            else:
-                var parts: seq[string] = @[]
-                for part in textBefore.split(Whitespace):
-                    if part.len > 0:
-                        if part.len > 0 and part[0] in {'A'..'Z'} and
-                                part.contains({'a'..'z'}) and
-                           not part[0..^1].allIt(it in {'A'..'Z'}):
-                            parts.add(part)
-                        else:
-                            parts.add(toSnakeCase(part))
-                    else:
-                        parts.add(part)
-                result.add(parts.join(" "))
-
+            result.add(processTextSegment(textBefore, toCamel))
             result.add(content[bounds.first .. bounds.last])
             lastPos = bounds.last + 1
             currentPos = bounds.last + 1
@@ -83,30 +92,7 @@ proc convertIdentifiers*(content: string, toCamel: bool): string =
 
     if lastPos < content.len:
         let remainingText = content[lastPos .. ^1]
-        if toCamel:
-            var parts: seq[string] = @[]
-            for part in remainingText.split(Whitespace):
-                if part.len > 0:
-                    if part.len > 0 and part[0] in {'A'..'Z'} and part.contains({'a'..'z'}):
-                        parts.add(part)
-                    else:
-                        parts.add(toCamelCase(part))
-                else:
-                    parts.add(part)
-            result.add(parts.join(" "))
-        else:
-            var parts: seq[string] = @[]
-            for part in remainingText.split(Whitespace):
-                if part.len > 0:
-                    if part.len > 0 and part[0] in {'A'..'Z'} and part.contains(
-                            {'a'..'z'}) and
-                       not part[0..^1].allIt(it in {'A'..'Z'}):
-                        parts.add(part)
-                    else:
-                        parts.add(toSnakeCase(part))
-                else:
-                    parts.add(part)
-            result.add(parts.join(" "))
+        result.add(processTextSegment(remainingText, toCamel))
 
     return result
 
