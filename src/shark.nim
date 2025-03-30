@@ -1,4 +1,4 @@
-import std/[os, strutils, parseopt, re, sequtils]
+import std/[os, strutils, sequtils, parseopt, re]
 
 proc to_camel_case*(s: string): string =
     let
