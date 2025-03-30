@@ -32,7 +32,6 @@ func to_snake_case*(str: string): string =
         return str
     for i, chara in str:
         if i > 0 and chara in {'A'..'Z'}:
-            result.add('_')
             result.add(to_lower_ascii(chara))
         else:
             if i == 0 and is_pascal_case(str):
