@@ -64,9 +64,10 @@ func process_text_segment(text: string, to_camel: bool): string =
                     else:
                         result.add(to_camel_case(word))
                 else:
-                    if word.len > 0 and word[0] in {'A'..'Z'} and word.contains(
-                            {'a'..'z'}) and
-                       not word[0..^1].all_it(it in {'A'..'Z'}):
+                    if word.len > 0 and
+                        word[0] in {'A'..'Z'} and
+                        word.contains({'a'..'z'}) and
+                        not word[0..^1].all_it(it in {'A'..'Z'}):
                         result.add(word)
                     else:
                         result.add(to_snake_case(word))
