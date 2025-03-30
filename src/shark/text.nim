@@ -40,7 +40,6 @@ proc to_snake_case*(s: string): string =
 proc process_text_segment(text: string, to_camel: bool): string =
     ## Internal logic for processing text sections.
     var i = 0
-
     while i < text.len:
         var ws_start = i
         while i < text.len and text[i] in Whitespace:
