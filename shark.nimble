@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.0"
+version       = "1.0.0"
 author        = "Navid M"
 description   = "Case converter"
 license       = "GPL-3.0-only"
