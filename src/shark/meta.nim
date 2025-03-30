@@ -13,7 +13,7 @@ proc show_about*() =
     '-'`-._           ((   o   )
             `'--....(`- ,__..--'
                     '-'`
-shark v1.0.0
-navid m
+Shark v1.0.0
+Navid M
 https://github.com/navid-m"""
     quit(0)
