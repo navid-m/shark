@@ -1,142 +1,141 @@
 import std/[os, strutils, parseopt, re, sequtils]
 
-proc toCamelCase*(s: string): string =
+proc to_camel_case*(s: string): string =
     let
-        allCaps = s.len > 0 and s.toUpperAscii() == s and s.contains('_')
-        isPascalCase = s.len > 0 and s[0] in {'A'..'Z'}
+        all_caps = s.len > 0 and s.to_upper_ascii() == s and s.contains('_')
+        is_pascal_case = s.len > 0 and s[0] in {'A'..'Z'}
 
-    if isPascalCase or allCaps:
+    if is_pascal_case or all_caps:
         return s
 
-    var capitalizeNext = false
+    var capitalize_next = false
     result = ""
     if s.len > 0 and s[0] == '_':
-        capitalizeNext = true
+        capitalize_next = true
 
     for c in s:
         if c == '_':
-            capitalizeNext = true
-        elif capitalizeNext:
-            result.add(toUpperAscii(c))
-            capitalizeNext = false
+            capitalize_next = true
+        elif capitalize_next:
+            result.add(to_upper_ascii(c))
+            capitalize_next = false
         else:
             result.add(c)
 
-proc toSnakeCase*(s: string): string =
-    let allCaps = s.len > 0 and s.toUpperAscii() == s
-    if allCaps:
+proc to_snake_case*(s: string): string =
+    if s.len > 0 and s.to_upper_ascii() == s:
         return s
-    let isPascalCase = s.len > 0 and s[0] in {'A'..'Z'}
+    let is_pascal_case = s.len > 0 and s[0] in {'A'..'Z'}
 
     result = ""
     for i, c in s:
         if i > 0 and c in {'A'..'Z'}:
             result.add('_')
-            result.add(toLowerAscii(c))
+            result.add(to_lower_ascii(c))
         else:
-            if i == 0 and isPascalCase:
-                result.add(toLowerAscii(c))
+            if i == 0 and is_pascal_case:
+                result.add(to_lower_ascii(c))
             else:
                 result.add(c)
 
-proc processTextSegment(text: string, toCamel: bool): string =
+proc process_text_segment(text: string, to_camel: bool): string =
     var i = 0
 
     while i < text.len:
-        var wsStart = i
+        var ws_start = i
         while i < text.len and text[i] in Whitespace:
             i.inc
 
-        if i > wsStart:
-            result.add(text[wsStart..<i])
+        if i > ws_start:
+            result.add(text[ws_start..<i])
 
-        var wordStart = i
+        var word_start = i
         while i < text.len and text[i] notin Whitespace:
             i.inc
 
-        if i > wordStart:
-            let word = text[wordStart..<i]
+        if i > word_start:
+            let word = text[word_start..<i]
             if word.len > 0:
-                if toCamel:
+                if to_camel:
                     if word.len > 0 and word[0] in {'A'..'Z'} and word.contains({'a'..'z'}):
                         result.add(word)
                     else:
-                        result.add(toCamelCase(word))
+                        result.add(to_camel_case(word))
                 else:
                     if word.len > 0 and word[0] in {'A'..'Z'} and word.contains(
                             {'a'..'z'}) and
-                       not word[0..^1].allIt(it in {'A'..'Z'}):
+                       not word[0..^1].all_it(it in {'A'..'Z'}):
                         result.add(word)
                     else:
-                        result.add(toSnakeCase(word))
+                        result.add(to_snake_case(word))
 
     return result
 
-proc convertIdentifiers*(content: string, toCamel: bool): string =
-    let stringPattern = re"'[^']*'"
+proc convert_identifiers*(content: string, to_camel: bool): string =
+    let string_pattern = re"'[^']*'"
     var
-        lastPos = 0
-        currentPos = 0
+        last_pos = 0
+        current_pos = 0
 
     result = ""
-    while currentPos < content.len:
-        let bounds = findBounds(content, stringPattern, currentPos)
+    while current_pos < content.len:
+        let bounds = find_bounds(content, string_pattern, current_pos)
         if bounds.first >= 0:
-            let textBefore = content[lastPos ..< bounds.first]
-            result.add(processTextSegment(textBefore, toCamel))
+            let text_before = content[last_pos ..< bounds.first]
+            result.add(process_text_segment(text_before, to_camel))
             result.add(content[bounds.first .. bounds.last])
-            lastPos = bounds.last + 1
-            currentPos = bounds.last + 1
+            last_pos = bounds.last + 1
+            current_pos = bounds.last + 1
         else:
             break
 
-    if lastPos < content.len:
-        let remainingText = content[lastPos .. ^1]
-        result.add(processTextSegment(remainingText, toCamel))
+    if last_pos < content.len:
+        let remaining_text = content[last_pos .. ^1]
+        result.add(process_text_segment(remaining_text, to_camel))
 
     return result
 
-proc showUsage() = echo "usage: shark -c|-s filename [filename2 ...]"
+proc show_usage() = echo "usage: shark -c|-s filename [filename2 ...]"
 
-proc processFile*(filename: string, toCamel: bool) =
-    if not fileExists(filename):
-        echo "Error: File not found: ", filename
+proc process_file*(filename: string, to_camel: bool) =
+    if not file_exists(filename):
+        echo "File not found: ", filename
         return
 
     let
-        content = readFile(filename)
-        converted = convertIdentifiers(content, toCamel)
+        content = read_file(filename)
+        converted = convert_identifiers(content, to_camel)
 
-    writeFile(filename, converted)
+    write_file(filename, converted)
 
-when isMainModule:
+when is_main_module:
     var
-        toCamel = false
-        toSnake = false
+        to_camel = false
+        to_snake = false
         files: seq[string] = @[]
 
     for kind, key, val in getopt():
         case kind
-        of cmdArgument:
+        of cmd_argument:
             files.add(key)
-        of cmdLongOption, cmdShortOption:
+        of cmd_long_option, cmd_short_option:
             case key
-            of "c": toCamel = true
-            of "s": toSnake = true
-        of cmdEnd: discard
+            of "c": to_camel = true
+            of "s": to_snake = true
+        of cmd_end: discard
 
-    if toCamel and toSnake:
+    if to_camel and to_snake:
         echo "Cannot specify both -c and -s options"
         quit(1)
-    elif not toCamel and not toSnake:
+    elif not to_camel and not to_snake:
         echo "Must specify either -c (to camelCase) or -s (to snake_case)"
-        showUsage()
+        show_usage()
         quit(1)
 
     if files.len == 0:
         echo "No input files specified"
-        showUsage()
+        show_usage()
         quit(1)
 
     for file in files:
-        processFile(file, toCamel)
+        process_file(file, to_camel)
