@@ -1,4 +1,4 @@
-proc show_usage*() = echo "Usage: shark [-c|-s] fname [fname_2 ...]"
+proc show_usage*() = echo "Usage: shark [-c|-s|-t|-f] fname [fname_2 ...]\n(t = 2 space | f = 4 space)"
 proc show_about*() =
     echo """
                 ,
