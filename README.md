@@ -20,7 +20,7 @@ Use `-t` and `-f` to toggle between 2 and 4 space indentation.
 
 #### Usage as a library
 
-Use the `to_camel_case`, `to_snake_case`, and `process_file` functions exported by the library.
+Use the `to_camel_case`, `to_snake_case`, `toggle_indentation` and `process_file` functions exported by the library.
 
 Intended for nim source files but can be used on any text files.
 
