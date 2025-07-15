@@ -16,7 +16,7 @@ Convert to snake case:
 shark -s src/shark/text.nim
 ```
 
-Use -t and -f to toggle between 2 and 4 space indentation.
+Use `-t` and `-f` to toggle between 2 and 4 space indentation.
 
 #### Usage as a library
 
