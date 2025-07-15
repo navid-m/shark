@@ -13,7 +13,7 @@ when is_main_module:
         to_two = false
         files: seq[string] = @[]
 
-    if commandLineParams().len == 0:
+    if command_line_params().len == 0:
         show_usage()
         quit(1)
 
@@ -36,10 +36,10 @@ when is_main_module:
 
     if to_four:
         for file in files:
-            toggleIndentation(file, false)
+            toggle_indentation(file, false)
     elif to_two:
         for file in files:
-            toggleIndentation(file, true)
+            toggle_indentation(file, true)
 
     if to_camel and to_snake:
         echo "You cannot specify both -c and -s options."
