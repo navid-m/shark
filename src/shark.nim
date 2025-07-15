@@ -4,6 +4,7 @@ import shark/[meta, processing, text, indentation]
 export to_camel_case
 export to_snake_case
 export process_file
+export toggle_indentation
 
 when is_main_module:
     var
