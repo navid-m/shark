@@ -44,7 +44,7 @@ proc convertIndentation(content: string, reverse: bool): string =
 
     return resultLines.join("\n")
 
-proc toggleIndentation*(inputFile: string, outputFile: string, reverse: bool) =
+proc toggleIndentation*(inputFile: string, reverse: bool) =
     let inplace = true
 
     if inputFile == "":
@@ -56,10 +56,6 @@ proc toggleIndentation*(inputFile: string, outputFile: string, reverse: bool) =
         echo "Error: Input file '" & inputFile & "' does not exist"
         quit(1)
 
-    if inplace and outputFile != "":
-        echo "Error: Cannot specify both --inplace and output file"
-        quit(1)
-
     try:
         let content = readFile(inputFile)
         let convertedContent = convertIndentation(content, reverse)
@@ -67,9 +63,7 @@ proc toggleIndentation*(inputFile: string, outputFile: string, reverse: bool) =
         if inplace:
             writeFile(inputFile, convertedContent)
             echo "File '" & inputFile & "' updated in place"
-        elif outputFile != "":
-            writeFile(outputFile, convertedContent)
-            echo "Converted file written to '" & outputFile & "'"
+
         else:
             echo convertedContent
 

@@ -1,4 +1,4 @@
-import std/parseopt
+import std/[parseopt, os]
 import shark/[meta, processing, text, indentation]
 
 export to_camel_case
@@ -12,6 +12,10 @@ when is_main_module:
         to_four = false
         to_two = false
         files: seq[string] = @[]
+
+    if commandLineParams().len == 0:
+        show_usage()
+        quit(1)
 
     for kind, key, val in getopt():
         case kind
@@ -32,22 +36,20 @@ when is_main_module:
 
     if to_four:
         for file in files:
-            toggleIndentation(file, file, false)
+            toggleIndentation(file, false)
     elif to_two:
         for file in files:
-            toggleIndentation(file, file, true)
+            toggleIndentation(file, true)
 
     if to_camel and to_snake:
         echo "You cannot specify both -c and -s options."
         quit(1)
-    elif not to_camel and not to_snake:
-        echo "No other options were specified (-c (camel case) or -s (snake case))."
-        quit(0)
 
     if files.len == 0:
         echo "Specify an input file."
         show_usage()
         quit(1)
 
-    for file in files:
-        process_file(file, to_camel)
+    if to_camel or to_snake:
+        for file in files:
+            process_file(file, to_camel)
